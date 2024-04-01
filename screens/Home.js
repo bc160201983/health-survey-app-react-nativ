@@ -7,43 +7,12 @@ import Completed from "../components/SurveyList/Completed";
 import { globalStyles } from "../styles/global";
 import db from "../firebase"; // Adjust the import path as necessary
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { useSurveyContext } from "../surveyContext";
 
 const Tab = createMaterialTopTabNavigator();
 
 const Home = ({ navigation }) => {
-  const [surveyCounts, setSurveyCounts] = useState({
-    available: 0,
-    pending: 0,
-    completed: 0,
-  });
-
-  const fetchSurveyCounts = async () => {
-    // Firestore collection reference
-    const surveysCollectionRef = collection(db, "Surveys");
-
-    // Function to fetch count by status
-    const fetchCountByStatus = async (status) => {
-      const q = query(surveysCollectionRef, where("status", "==", status));
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.size; // Returns the count of documents in the querySnapshot
-    };
-
-    // Fetch counts for each status
-    const availableCount = await fetchCountByStatus("available");
-    const pendingCount = await fetchCountByStatus("pending");
-    const completedCount = await fetchCountByStatus("completed");
-
-    // Set the state with the fetched counts
-    setSurveyCounts({
-      available: availableCount,
-      pending: pendingCount,
-      completed: completedCount,
-    });
-  };
-
-  useEffect(() => {
-    fetchSurveyCounts();
-  }, [surveyCounts]);
+  const { surveyCounts } = useSurveyContext();
 
   return (
     <View style={globalStyles.container}>

@@ -4,11 +4,13 @@ import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 const RadioButton = ({ selectedOption, onSelect, options }) => {
   return (
     <View style={styles.container}>
-      {options.map((option, index) => (
+      {options.map((option) => (
         <TouchableOpacity
-          key={index}
+          key={option} // Using option as key assuming they are unique strings
           style={styles.optionContainer}
           onPress={() => onSelect(option)}
+          accessibilityRole="button" // Enhancing accessibility
+          accessibilityLabel={`Select ${option}`} // Assuming option is descriptive enough
         >
           <View style={styles.circle}>
             {selectedOption === option && <View style={styles.checkedCircle} />}
@@ -20,7 +22,7 @@ const RadioButton = ({ selectedOption, onSelect, options }) => {
   );
 };
 
-export default RadioButton;
+export default React.memo(RadioButton); // Memoizing the component
 
 const styles = StyleSheet.create({
   container: {
