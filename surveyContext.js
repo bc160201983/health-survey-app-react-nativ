@@ -8,6 +8,8 @@ import {
   query,
   where,
   getDocs,
+  getDoc,
+  doc,
 } from "firebase/firestore";
 import { useDeviceUUID } from "./context";
 import { Alert } from "react-native";
@@ -26,36 +28,6 @@ export const SurveyProvider = ({ children }) => {
     completed: 0,
   });
 
-  const fetchAvailableSurveys = async () => {
-    try {
-      const surveySnapshot = await getDocs(collection(db, "Surveys"));
-      const allSurveys = surveySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      const completedResponsesSnapshot = await getDocs(
-        query(
-          collection(db, "SurveyResponses"),
-          where("deviceUUID", "==", deviceUUID),
-          where("status", "==", "completed")
-        )
-      );
-
-      const completedSurveyIds = completedResponsesSnapshot.docs.map(
-        (doc) => doc.data().surveyId
-      );
-
-      const availableSurveys = allSurveys.filter(
-        (survey) => !completedSurveyIds.includes(survey.id)
-      );
-
-      setSurveys(availableSurveys);
-    } catch (error) {
-      console.error("Error fetching surveys:", error);
-      throw error;
-    }
-  };
   useEffect(() => {
     // Firestore collection references
     const surveysCollectionRef = collection(db, "Surveys");
@@ -64,16 +36,38 @@ export const SurveyProvider = ({ children }) => {
     // Function to create a real-time listener for count by status
     const createCountListener = (status) => {
       if (status === "available") {
-        const q = query(surveysCollectionRef, where("status", "==", status));
-        return onSnapshot(q, (querySnapshot) => {
+        const q = query(collection(db, "Surveys"));
+        return onSnapshot(q, async (surveySnapshot) => {
+          const allSurveys = surveySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          const responseQueries = allSurveys.map((survey) =>
+            query(
+              collection(db, "SurveyResponses"),
+              where("deviceUUID", "==", deviceUUID),
+              where("surveyId", "==", survey.id),
+              where("status", "in", ["pending", "completed"])
+            )
+          );
+
+          const responseSnapshots = await Promise.all(
+            responseQueries.map((q) => getDocs(q))
+          );
+
+          const availableSurveys = allSurveys.filter(
+            (survey, index) => responseSnapshots[index].empty
+          );
+
           setSurveyCounts((prevCounts) => ({
             ...prevCounts,
-            available: querySnapshot.size,
+            available: availableSurveys.length,
           }));
         });
       } else {
         const q = query(
-          surveyResponsesCollectionRef,
+          collection(db, "SurveyResponses"),
           where("deviceUUID", "==", deviceUUID),
           where("status", "==", status)
         );
@@ -85,7 +79,6 @@ export const SurveyProvider = ({ children }) => {
         });
       }
     };
-
     // Create real-time listeners for each status
     const availableListener = createCountListener("available");
     const pendingListener = createCountListener("pending");
@@ -99,18 +92,48 @@ export const SurveyProvider = ({ children }) => {
     };
   }, [deviceUUID]);
 
-  const fetchSurveys = async () => {
-    setIsRefreshing(true); // Set refreshing to true when fetching starts
+  useEffect(() => {
+    let unsubscribeAvailableSurveys;
+    let unsubscribeSurveys;
+    const fetchAvailableSurveys = () => {
+      const surveyQuery = query(collection(db, "Surveys"));
+      return onSnapshot(surveyQuery, async (surveySnapshot) => {
+        const allSurveys = surveySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-    try {
+        const responseQueries = allSurveys.map((survey) =>
+          query(
+            collection(db, "SurveyResponses"),
+            where("deviceUUID", "==", deviceUUID),
+            where("surveyId", "==", survey.id),
+            where("status", "in", ["pending", "completed"])
+          )
+        );
+
+        const responseSnapshots = await Promise.all(
+          responseQueries.map((q) => getDocs(q))
+        );
+
+        const availableSurveys = allSurveys.filter(
+          (survey, index) => responseSnapshots[index].empty
+        );
+
+        setSurveys(availableSurveys);
+      });
+    };
+
+    const fetchSurveys = async () => {
       const responsesQuery = query(
         collection(db, "SurveyResponses"),
         where("deviceUUID", "==", deviceUUID),
         where("status", "==", "pending")
       );
-      const querySnapshot = await getDocs(responsesQuery);
+
+      const responseSnapshot = await getDocs(responsesQuery);
       const pendingSurveysData = await Promise.all(
-        querySnapshot.docs.map(async (responseDoc) => {
+        responseSnapshot.docs.map(async (responseDoc) => {
           const surveyId = responseDoc.data().surveyId;
           const surveyDocSnap = await getDoc(doc(db, "Surveys", surveyId));
           if (surveyDocSnap.exists()) {
@@ -126,22 +149,20 @@ export const SurveyProvider = ({ children }) => {
       );
 
       setPendingSurveys(pendingSurveysData.filter((survey) => survey !== null));
-      setIsRefreshing(false); // Set refreshing to false when fetching ends
-    } catch (error) {
-      Alert.alert("Error", "An error occurred while fetching pending surveys.");
-      console.error("Error fetching surveys:", error);
-    }
-  };
+    };
 
-  useEffect(() => {
-    fetchAvailableSurveys();
-    fetchSurveys();
-  }, [deviceUUID]);
+    unsubscribeAvailableSurveys = fetchAvailableSurveys();
+    unsubscribeSurveys = fetchSurveys();
 
-  const handleRefresh = () => {
-    fetchAvailableSurveys();
-    fetchSurveys();
-  };
+    return () => {
+      if (typeof unsubscribeAvailableSurveys === "function") {
+        unsubscribeAvailableSurveys();
+      }
+      if (typeof unsubscribeSurveys === "function") {
+        unsubscribeSurveys();
+      }
+    };
+  }, [deviceUUID, surveyCounts]);
 
   return (
     <SurveyContext.Provider
@@ -149,9 +170,7 @@ export const SurveyProvider = ({ children }) => {
         surveys,
         pendingSurveys,
         isRefreshing,
-        fetchAvailableSurveys,
-        fetchSurveys,
-        handleRefresh,
+
         surveyCounts,
       }}
     >

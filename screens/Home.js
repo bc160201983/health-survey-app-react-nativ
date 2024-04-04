@@ -13,6 +13,7 @@ const Tab = createMaterialTopTabNavigator();
 
 const Home = ({ navigation }) => {
   const { surveyCounts } = useSurveyContext();
+  console.log(surveyCounts);
 
   return (
     <View style={globalStyles.container}>

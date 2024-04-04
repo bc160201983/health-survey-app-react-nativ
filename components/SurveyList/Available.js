@@ -19,7 +19,8 @@ import SurveyItem from "../SurveyItem"; // Adjust the import path as necessary
 import { useSurveyContext } from "../../surveyContext";
 
 const Available = ({ navigation }) => {
-  const { surveys, isRefreshing, handleRefresh } = useSurveyContext();
+  const { surveys, isRefreshing, handleRefresh, fetchAvailableSurveys } =
+    useSurveyContext();
 
   // Ensure this hook correctly provides the device UUID
   const handlePress = (survey) => {
