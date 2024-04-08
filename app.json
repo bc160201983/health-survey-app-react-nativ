@@ -1,7 +1,5 @@
 {
   "expo": {
-    "name": "health-servay-app",
-    "slug": "health-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,23 +13,18 @@
     "ios": {
       "supportsTablet": true
     },
+
+    "extra": {
+      "eas": {
+        "projectId": "ec555f4b-e08d-4a77-aee3-8700798fe925"
+      }
+    },
     "android": {
-      "googleServicesFile": "./android/app/google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.bilalafzaal.healthapp"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": ["expo-secure-store"],
-    "extra": {
-      "eas": {
-        "projectId": "c2f46ee6-6aea-4d93-a2e3-c144cf29fd7f"
-      }
-    },
-    "owner": "bilalafzaal"
+      "package": "com.bilalafzaal.healthservayapp"
+    }
   }
 }

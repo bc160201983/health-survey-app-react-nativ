@@ -1,60 +1,23 @@
 import { StatusBar } from "expo-status-bar";
-
-import { Alert, StyleSheet, Text, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AntDesign } from "@expo/vector-icons";
+import { Badge } from "react-native-elements"; // Import the Badge component
 import Home from "./screens/Home";
 import Survey from "./screens/Survey";
 import StartScreen from "./screens/StartScreen";
 import FinishScreen from "./screens/FinishScreen";
 import { DeviceUUIDProvider } from "./context";
 import { SurveyProvider } from "./surveyContext";
-import { useEffect, useRef } from "react";
+import BellIconWithBadge from "./components/BellIconWithBadge";
+import NotificationListScreen from "./screens/NotificationListScreen";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  //   let token;
+  const notificationCount = 3;
+  const notifications = ["Notification 1", "Notification 2", "Notification 3"]; // Replace this with your list of notifications
 
-  //   const { status: existingStatus } =
-  //     await Notifications.getPermissionsAsync();
-  //   let finalStatus = existingStatus;
-
-  //   if (existingStatus !== "granted") {
-  //     const { status } = await Notifications.requestPermissionsAsync();
-  //     finalStatus = status;
-  //   }
-  //   if (finalStatus !== "granted") {
-  //     alert("Failed to get push token for push notification!");
-  //     return;
-  //   }
-  //   token = (await Notifications.getExpoPushTokenAsync()).data;
-  //   console.log(token);
-
-  //   return token;
-  // }
-  // Notifications.setNotificationHandler({
-  //   handleNotification: async () => ({
-  //     shouldShowAlert: true,
-  //   }),
-  // });
-
-  // useEffect(() => {
-  //   registerForPushNotificationsAsync();
-  //   // // Works when app is foregrounded, backgrounded, or killed
-  //   // responseListener.current =
-  //   //   Notifications.addNotificationResponseReceivedListener((response) => {
-  //   //     console.log("--- notification tapped ---");
-  //   //     console.log(response);
-  //   //     console.log("------");
-  //   //   });
-
-  //   // // Unsubscribe from events
-  //   // return () => {
-  //   //   Notifications.removeNotificationSubscription(responseListener.current);
-  //   //};
-  // }, []);
   return (
     <DeviceUUIDProvider>
       <SurveyProvider>
@@ -63,8 +26,12 @@ export default function App() {
             <Stack.Screen
               options={{
                 title: "List of Surveys",
-                headerRight: () => (
-                  <AntDesign name="bells" size={24} color="black" />
+                headerRight: ({ navigation }) => (
+                  <BellIconWithBadge
+                    navigation={navigation}
+                    count={notificationCount}
+                    notifications={notifications}
+                  />
                 ),
               }}
               name="Home"
@@ -73,6 +40,11 @@ export default function App() {
             <Stack.Screen name="StartScreen" component={StartScreen} />
             <Stack.Screen name="Survey" component={Survey} />
             <Stack.Screen name="FinishScreen" component={FinishScreen} />
+            <Stack.Screen
+              name="Notifications"
+              component={NotificationListScreen}
+              options={{ title: "Notifications" }}
+            />
           </Stack.Navigator>
           <StatusBar style="auto" />
         </NavigationContainer>

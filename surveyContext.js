@@ -12,7 +12,6 @@ import {
   doc,
 } from "firebase/firestore";
 import { useDeviceUUID } from "./context";
-import { Alert } from "react-native";
 
 const SurveyContext = createContext();
 

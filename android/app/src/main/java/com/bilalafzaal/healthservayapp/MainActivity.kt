@@ -1,4 +1,4 @@
-package com.bilalafzaal.healthapp
+package com.bilalafzaal.healthservayapp
 
 import android.os.Build
 import android.os.Bundle
