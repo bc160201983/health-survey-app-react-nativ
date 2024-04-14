@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import { View, Text, StyleSheet } from "react-native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Available from "../components/SurveyList/Available";
@@ -6,14 +7,16 @@ import Pending from "../components/SurveyList/Pending";
 import Completed from "../components/SurveyList/Completed";
 import { globalStyles } from "../styles/global";
 import db from "../firebase"; // Adjust the import path as necessary
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { useSurveyContext } from "../surveyContext";
+import { useDeviceUUID } from "../context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Tab = createMaterialTopTabNavigator();
 
 const Home = ({ navigation }) => {
   const { surveyCounts } = useSurveyContext();
-  console.log(surveyCounts);
+  const { deviceUUID } = useDeviceUUID();
 
   return (
     <View style={globalStyles.container}>

@@ -1,7 +1,8 @@
 // SurveyContext.js
+import db from "./firebase";
+import { useDeviceUUID } from "./context";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-import db from "./firebase";
 import {
   collection,
   onSnapshot,
@@ -11,15 +12,16 @@ import {
   getDoc,
   doc,
 } from "firebase/firestore";
-import { useDeviceUUID } from "./context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SurveyContext = createContext();
 
 export const SurveyProvider = ({ children }) => {
+  const { deviceUUID } = useDeviceUUID();
   const [surveys, setSurveys] = useState([]);
   const [pendingSurveys, setPendingSurveys] = useState([]);
+
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { deviceUUID } = useDeviceUUID();
 
   const [surveyCounts, setSurveyCounts] = useState({
     available: 0,
@@ -28,10 +30,6 @@ export const SurveyProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    // Firestore collection references
-    const surveysCollectionRef = collection(db, "Surveys");
-    const surveyResponsesCollectionRef = collection(db, "SurveyResponses");
-
     // Function to create a real-time listener for count by status
     const createCountListener = (status) => {
       if (status === "available") {
@@ -169,7 +167,6 @@ export const SurveyProvider = ({ children }) => {
         surveys,
         pendingSurveys,
         isRefreshing,
-
         surveyCounts,
       }}
     >

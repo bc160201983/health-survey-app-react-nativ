@@ -4,12 +4,13 @@ import { getFirestore } from "firebase/firestore";
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBI7es8AhqdbsOaR5x_Efl8s-mwLU47ons",
-  authDomain: "health-app-3d491.firebaseapp.com",
-  projectId: "health-app-3d491",
-  storageBucket: "health-app-3d491.appspot.com",
-  messagingSenderId: "415856308958",
-  appId: "1:415856308958:web:129f171d0b8b7364ba084f",
+  apiKey: "AIzaSyBCbarwY5FQZ0hY0iufyULVMjKMzZoRNj0",
+  authDomain: "health-app-react.firebaseapp.com",
+  projectId: "health-app-react",
+  storageBucket: "health-app-react.appspot.com",
+  messagingSenderId: "912573667215",
+  appId: "1:912573667215:web:3012fd42a8ec64c7e31dfa",
+  measurementId: "G-7LM1B2RCS7",
 };
 
 // Initialize Firebase

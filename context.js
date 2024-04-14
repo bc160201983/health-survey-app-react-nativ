@@ -1,6 +1,5 @@
-// DeviceUUIDProvider.js
 import React, { createContext, useContext, useState, useEffect } from "react";
-import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Crypto from "expo-crypto";
 
 const DeviceUUIDContext = createContext("");
@@ -11,10 +10,10 @@ export const DeviceUUIDProvider = ({ children }) => {
   useEffect(() => {
     const fetchUUID = async () => {
       try {
-        let uuid = await SecureStore.getItemAsync("deviceUUID");
+        let uuid = await AsyncStorage.getItem("deviceUUID");
         if (!uuid) {
           uuid = Crypto.randomUUID();
-          await SecureStore.setItemAsync("deviceUUID", uuid);
+          await AsyncStorage.setItem("deviceUUID", uuid);
         }
         setDeviceUUID(uuid);
       } catch (error) {
@@ -23,7 +22,7 @@ export const DeviceUUIDProvider = ({ children }) => {
     };
     fetchUUID();
   }, []);
-
+  // console.log("context", deviceUUID);
   return (
     <DeviceUUIDContext.Provider value={{ deviceUUID }}>
       {children}
