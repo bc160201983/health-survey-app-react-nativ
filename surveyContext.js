@@ -20,6 +20,7 @@ export const SurveyProvider = ({ children }) => {
   const { deviceUUID } = useDeviceUUID();
   const [surveys, setSurveys] = useState([]);
   const [pendingSurveys, setPendingSurveys] = useState([]);
+  const [notiCount, setNotiCount] = useState(0);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -28,6 +29,39 @@ export const SurveyProvider = ({ children }) => {
     pending: 0,
     completed: 0,
   });
+  async function getUnseenNotificationCount() {
+    const deviceUUID = await AsyncStorage.getItem("deviceUUID");
+
+    try {
+      const tokenNotiRef = doc(db, "notificationToken", deviceUUID);
+
+      const unsubscribe = onSnapshot(tokenNotiRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const notifications = docSnap.data().notifications || [];
+          console.log(notifications.length);
+          const unseenNotifications = notifications.filter(
+            (notification) => !notification.seen
+          );
+
+          const unseenCount = unseenNotifications?.length;
+          setNotiCount(unseenCount);
+        } else {
+          console.log("Bellicon: No such document! in firebase");
+          setNotiCount(0);
+        }
+      });
+
+      // Return the unsubscribe function to detach the listener when needed
+      return unsubscribe;
+    } catch (error) {
+      console.error("Error getting unseen notification count:", error);
+      throw error;
+    }
+  }
+
+  useEffect(() => {
+    getUnseenNotificationCount();
+  }, []);
 
   useEffect(() => {
     // Function to create a real-time listener for count by status
@@ -164,6 +198,7 @@ export const SurveyProvider = ({ children }) => {
   return (
     <SurveyContext.Provider
       value={{
+        notiCount,
         surveys,
         pendingSurveys,
         isRefreshing,

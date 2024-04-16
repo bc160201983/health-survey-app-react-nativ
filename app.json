@@ -1,6 +1,7 @@
 {
   "expo": {
-    "name": "Health App",
+    "name": "Health Survey App",
+    "slug": "health-survey-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,15 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true
-    },
     "extra": {
       "eas": {
-        "projectId": "c6ffa5f1-8325-47fa-b0d5-bc0c2d8b0fe2"
+        "projectId": "5fc300eb-c930-4fc4-96b3-832c49e05f64"
       }
     },
     "android": {
@@ -27,10 +22,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.bilalafzaal.healthapp"
+      "package": "com.bilalafzaal.healthservayapp"
     },
-    "plugins": [
-      "expo-secure-store"
-    ]
+    "plugins": ["expo-secure-store", "expo-build-properties"]
   }
 }

@@ -89,7 +89,7 @@ const NotificationListScreen = ({ navigation }) => {
           );
           setNotiofications(sortedNotifications);
         } else {
-          console.log("No such document!");
+          console.log("NotificationListScreen", "No such document!");
           setNotiofications([]);
         }
       });

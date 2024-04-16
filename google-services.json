@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:912573667215:android:49f7aba893a720d2e31dfa",
+        "mobilesdk_app_id": "1:912573667215:android:000d167643396f68e31dfa",
         "android_client_info": {
-          "package_name": "com.bilalafzaal.healthapp"
+          "package_name": "com.bilalafzaal.healthservayapp"
         }
       },
       "oauth_client": [],
