@@ -162,7 +162,6 @@ async function registerForPushNotificationsAsync() {
         projectId: "5fc300eb-c930-4fc4-96b3-832c49e05f64",
       })
     ).data;
-    console.log(token);
   } else {
     alert("Must use physical device for Push Notifications");
   }

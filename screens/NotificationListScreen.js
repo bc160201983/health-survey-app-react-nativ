@@ -21,7 +21,7 @@ import { useDeviceUUID } from "../context";
 import db from "../firebase";
 
 const NotificationListScreen = ({ navigation }) => {
-  const { pendingSurveys } = useSurveyContext();
+  const { pendingSurveys, surveys } = useSurveyContext();
   const [notifications, setNotiofications] = useState([]);
   const { deviceUUID } = useDeviceUUID();
   const markNotificationAsSeen = async (deviceUUID, notificationId) => {
@@ -60,20 +60,40 @@ const NotificationListScreen = ({ navigation }) => {
   };
 
   const handleNotificationPress = async (surveyId, notificationId) => {
-    const survey = pendingSurveys.find((survey) => survey.id === surveyId);
-
     try {
+      // Mark the notification as seen
       await markNotificationAsSeen(deviceUUID, notificationId);
-    } catch (error) {
-      console.error("Error marking notification as seen:", error);
-    }
 
-    navigation.navigate("Survey", {
-      surveyId: survey.id,
-      surveyTitle: survey.title,
-      questions: survey.questions,
-      responseId: survey.responseId,
-    });
+      // Check if the survey is pending
+      const pendingSurvey = pendingSurveys.find(
+        (survey) => survey.id === surveyId
+      );
+      const availableSurvey = surveys.find((survey) => survey.id === surveyId);
+
+      if (pendingSurvey) {
+        // If the survey is pending, navigate to the Survey screen with pending survey data
+        navigation.navigate("Survey", {
+          surveyId: pendingSurvey.id,
+          surveyTitle: pendingSurvey.title,
+          questions: pendingSurvey.questions,
+          responseId: pendingSurvey.responseId,
+        });
+      } else {
+        navigation.navigate("Survey", {
+          surveyId: availableSurvey.id,
+          surveyTitle: availableSurvey.title,
+          questions: availableSurvey.questions,
+          responseId: availableSurvey.responseId,
+        });
+        // If the survey is not pending, it is available
+        // You can handle available surveys here, such as showing a message or navigating to a different screen
+        console.log("Available Survey:", surveyId);
+        // For example:
+        // navigation.navigate("AvailableSurveyScreen", { surveyId });
+      }
+    } catch (error) {
+      console.error("Error handling notification press:", error);
+    }
   };
 
   async function getNotifications() {
@@ -84,9 +104,9 @@ const NotificationListScreen = ({ navigation }) => {
         if (docSnap.exists()) {
           const notificationsData = docSnap.data().notifications || [];
           // Sort notifications by timestamp in descending order
-          const sortedNotifications = notificationsData.sort(
-            (a, b) => b.timestamp - a.timestamp
-          );
+          const sortedNotifications = notificationsData.sort((a, b) => {
+            return new Date(b.timestamp) - new Date(a.timestamp);
+          });
           setNotiofications(sortedNotifications);
         } else {
           console.log("NotificationListScreen", "No such document!");
@@ -104,7 +124,7 @@ const NotificationListScreen = ({ navigation }) => {
 
   useEffect(() => {
     getNotifications();
-  }, []);
+  }, [deviceUUID]);
   return (
     <View style={styles.container}>
       <FlatList
@@ -131,7 +151,7 @@ const NotificationListScreen = ({ navigation }) => {
             </View>
           </TouchableOpacity>
         )}
-        keyExtractor={(item, index) => index}
+        keyExtractor={(item, index) => item.surveyId}
       />
     </View>
   );
