@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Health Survey App",
-    "slug": "health-survey-app",
+    "slug": "health-servay-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,6 +24,16 @@
       },
       "package": "com.bilalafzaal.healthservayapp"
     },
-    "plugins": ["expo-secure-store", "expo-build-properties"]
+    "plugins": [
+      "expo-secure-store",
+      "expo-build-properties",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notificationIcon.png",
+          "color": "#ffffff"
+        }
+      ]
+    ]
   }
 }

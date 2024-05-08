@@ -1,7 +1,11 @@
 import db from "./firebase";
 import { StatusBar } from "expo-status-bar";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NavigationContainer } from "@react-navigation/native";
+import {
+  createNativeStackNavigator,
+  HeaderBackButton,
+} from "@react-navigation/native-stack";
+
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import Home from "./screens/Home";
@@ -30,6 +34,7 @@ Notifications.setNotificationHandler({
 export default function App() {
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
+
   const notificationListener = useRef();
   const responseListener = useRef();
 
@@ -109,9 +114,17 @@ export default function App() {
               component={NotificationListScreen}
               options={{ title: "Notifications" }}
             />
-            <Stack.Screen name="StartScreen" component={StartScreen} />
+            <Stack.Screen
+              name="StartScreen"
+              component={StartScreen}
+              options={{ title: "Start Survey" }}
+            />
             <Stack.Screen name="Survey" component={Survey} />
-            <Stack.Screen name="FinishScreen" component={FinishScreen} />
+            <Stack.Screen
+              name="FinishScreen"
+              component={FinishScreen}
+              options={{ title: "Finish Survey" }}
+            />
           </Stack.Navigator>
           <StatusBar style="auto" />
         </NavigationContainer>

@@ -4,15 +4,15 @@ import { getFirestore } from "firebase/firestore";
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBCbarwY5FQZ0hY0iufyULVMjKMzZoRNj0",
-  authDomain: "health-app-react.firebaseapp.com",
-  projectId: "health-app-react",
-  storageBucket: "health-app-react.appspot.com",
-  messagingSenderId: "912573667215",
-  appId: "1:912573667215:web:3012fd42a8ec64c7e31dfa",
-  measurementId: "G-7LM1B2RCS7",
+  apiKey: process.env.EXPO_PUBLIC_apiKey,
+  authDomain: process.env.EXPO_PUBLIC_authDomain,
+  projectId: process.env.EXPO_PUBLIC_projectId,
+  storageBucket: process.env.EXPO_PUBLIC_storageBucket,
+  messagingSenderId: process.env.EXPO_PUBLIC_messagingSenderId,
+  appId: process.env.EXPO_PUBLIC_appId,
+  measurementId: process.env.EXPO_PUBLIC_measurementId,
 };
-
+console.log(firebaseConfig);
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 

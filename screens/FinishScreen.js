@@ -1,11 +1,20 @@
 // FinishScreen.js
-import React from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 
 const FinishScreen = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
   const handleReturnHome = () => {
+    setLoading(true);
     // Navigate back to the home screen or survey list
     navigation.popToTop();
+    setLoading(false);
   };
 
   return (
@@ -15,7 +24,11 @@ const FinishScreen = ({ navigation }) => {
         We appreciate your time spent taking our survey. Your response has been
         recorded.
       </Text>
-      <Button title="Return Home" onPress={handleReturnHome} />
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" animating={loading} />
+      ) : (
+        <Button title="Return Home" onPress={handleReturnHome} />
+      )}
     </View>
   );
 };

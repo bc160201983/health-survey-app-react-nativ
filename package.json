@@ -57,7 +57,8 @@
     "react-native-tab-view": "^3.5.2",
     "react-native-web": "~0.19.6",
     "uuid": "^9.0.1",
-    "expo-device": "~5.9.3"
+    "expo-device": "~5.9.3",
+    "expo-splash-screen": "~0.26.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

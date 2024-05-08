@@ -14,7 +14,7 @@ import {
   onSnapshot,
   getDocs,
 } from "firebase/firestore";
-import { useDeviceUUID } from "../../context";
+
 import SurveyItem from "../SurveyItem"; // Adjust the import path as necessary
 import { useSurveyContext } from "../../surveyContext";
 
